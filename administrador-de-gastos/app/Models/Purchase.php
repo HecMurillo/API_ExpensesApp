@@ -10,7 +10,7 @@ class Purchase extends Model
     use HasFactory;
     protected $fillable = 
     [
-        'users_id',
+        'user_id',
         'buy',
     ];
 }

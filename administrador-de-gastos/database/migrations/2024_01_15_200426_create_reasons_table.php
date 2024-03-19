@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('reasons', function (Blueprint $table) {
             $table->id();
-            $table->integer('users_id');
             $table->string('reason');
             $table->timestamps();
         });

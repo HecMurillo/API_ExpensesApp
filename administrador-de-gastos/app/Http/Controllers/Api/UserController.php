@@ -3,22 +3,22 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\purchase;
 use Illuminate\Http\Request;
+use App\Models\User as modelUser;
 
-class PurchaseController extends Controller
+class UserController extends Controller
 {
     public function list(){
-        $shoppings = Purchase::all();
+        $users = modelUser::all();
         $list = [];
-        foreach($shoppings as $shopping)
+        foreach($users as $user)
         {
             $object =[
-                "id" => $shopping->id,
-                "user_id" => $shopping->user_id,
-                "buy" => $shopping->buy,
-                "created" => $shopping->created_at,
-                "updated" => $shopping->updated_at
+                "id" => $user->id,
+                "name" => $user->name,
+                "email" => $user->email,
+                "created" => $user->created_at,
+                "updated" => $user->updated_at
             ];
             array_push($list, $object);
         }
@@ -27,14 +27,14 @@ class PurchaseController extends Controller
 
     public function item($id)
     {
-        $shopping = Purchase::where('id', '=', $id) ->first();
+        $user = modelUser::where('id', '=', $id) ->first();
         {
             $object =[
-                "id" => $shopping->id,
-                "user_id" => $shopping->user_id,
-                "buy" => $shopping->buy,
-                "created" => $shopping->created_at,
-                "updated" => $shopping->updated_at
+                "id" => $user->id,
+                "name" => $user->name,
+                "email" => $user->email,
+                "created" => $user->created_at,
+                "updated" => $user->updated_at
             ];
         }
         return response()->json($object);
@@ -43,18 +43,20 @@ class PurchaseController extends Controller
     public function create(Request $request)
     {
         $data = $request->validate([
-            'buy' => 'required',
-            'user_id'=> 'required|integer',
+            'name' => 'required',
+            'email'=> 'required',
+            'password'=> 'required',
         ]);
 
-        $purchase=purchase::create([
-            'buy' => $data['buy'],
-            'user_id' => $data['user_id']
+        $user=modelUser::create([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'password' => $data['password'],
         ]);
-        if($purchase){
+        if($user){
             return response()->json([
                 'message' => 'Se ha creado un registro',
-                'data' => $purchase
+                'data' => $user
             ]);
         }else{
             return response()->json([
@@ -62,29 +64,28 @@ class PurchaseController extends Controller
             ]);
         }
     } 
-
     public function update(Request $request)
     {
         $data = $request->validate([
-            'id' => 'required|integer|min:1',
-            'user_id'=> 'required|integer',
-            'buy' => 'required'
+            'id' => 'required|integer',
+            'name' => 'required',
+            'email'=> 'required',
         ]);
-
-        $shopping = Purchase::where('id', '=', $data['id'])->first();
+        $user = modelUser::where('id', '=', $data['id'])->first();
         
-        if($shopping)
+        if($user)
         {
-            $old = clone $shopping;
-            $shopping->buy =$data['buy'];
-            $shopping->user_id =$data['user_id'];
+            $old = clone $user;
+
+            $user->name =$data['name'];
+            $user->email =$data['email'];
             
-            if($shopping->save()){
+            if($user->save()){
                 $object =
                 [
                     "response" => 'success, Item update correctly',
                     "old" => $old,
-                    "new" => $shopping,
+                    "new" => $user,
                 ];
                 return response()->json($object);
             } else{
@@ -104,26 +105,26 @@ class PurchaseController extends Controller
         }
     } 
 
-    public function updatedepobres(Request $request)
+    public function updatepass(Request $request)
     {
         $data = $request->validate([
-            'id' => 'required|integer|min:1',
-            'buy' => 'required'
+            'id' => 'required|integer',
+            'password'=> 'required',
         ]);
-
-        $shopping = Purchase::where('id', '=', $data['id'])->first();
+        $user = modelUser::where('id', '=', $data['id'])->first();
         
-        if($shopping)
+        if($user)
         {
-            $old = clone $shopping;
-            $shopping->buy =$data['buy'];
-            
-            if($shopping->save()){
+            $old = clone $user;
+
+            $user->password =$data['password'];
+
+            if($user->save()){
                 $object =
                 [
                     "response" => 'success, Item update correctly',
                     "old" => $old,
-                    "new" => $shopping,
+                    "new" => $user,
                 ];
                 return response()->json($object);
             } else{

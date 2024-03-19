@@ -11,7 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        //
+        Schema::table('reasons', function (Blueprint $table) {
+            $table->integer('user_id');
+        });
     }
 
     /**
@@ -19,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::table('reasons', function (Blueprint $table) {
+            $table->dropColumn('user_id');
+        });
     }
 };

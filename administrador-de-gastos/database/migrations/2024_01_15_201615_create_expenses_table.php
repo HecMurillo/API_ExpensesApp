@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->decimal('expense');
             $table->integer('earning');
-            $table->integer('users_id');
             $table->integer('purchase_id');
             $table->integer('date_id');
             $table->integer('reason_id');

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\expense as ModelExpense;
+use App\Models\Reason;
 use Illuminate\Http\Request;
 
 class ExpenseController extends Controller
@@ -16,11 +17,10 @@ class ExpenseController extends Controller
             $object =[
                 "id" => $expense->id,
                 "expense" => $expense->expense,
-                "earning" => $expense->earning,
-                "users_id" => $expense->users_id,
-                "purchase_id" => $expense->purchase_id,
-                "date_id" => $expense->date_id,
-                "reason_id" => $expense->reason_id,
+                "user" => $expense->user,
+                "purchase" => $expense->purchase,
+                "date" => $expense->date,
+                "reason" => $expense->reason,
                 "created" => $expense->created_at,
                 "updated" => $expense->updated_at
             ];
@@ -37,11 +37,10 @@ class ExpenseController extends Controller
             $object =[
                 "id" => $expenses->id,
                 "expense" => $expenses->expense,
-                "earning" => $expenses->earning,
-                "users_id" => $expenses->users_id,
-                "purchase_id" => $expenses->purchase_id,
-                "date_id" => $expenses->date_id,
-                "reason_id" => $expenses->reason_id,
+                "user" => $expenses->user,
+                "purchase" => $expenses->purchase,
+                "date" => $expenses->date,
+                "reason" => $expenses->reason,
                 "created" => $expenses->created_at,
                 "updated" => $expenses->updated_at
             ];
@@ -54,16 +53,14 @@ class ExpenseController extends Controller
     {
         $data = $request->validate([
             'expense' => 'required|numeric',
-            'earning' => 'required|numeric',
-            'users_id'=> 'required|integer',
+            'user_id'=> 'required|integer',
             'purchase_id'=> 'required|integer',
             'date_id'=> 'required|integer',
             'reason_id'=> 'required|integer',
         ]);
         $expense=ModelExpense::create([
             'expense' => $data['expense'],
-            'earning' => $data['earning'],
-            'users_id'=> $data['users_id'],
+            'user_id'=> $data['user_id'],
             'purchase_id'=> $data['purchase_id'],
             'date_id'=> $data['date_id'],
             'reason_id'=> $data['reason_id']
@@ -86,8 +83,7 @@ class ExpenseController extends Controller
         $data = $request->validate([
             'id' => 'required|integer|min:1',
             'expense' => 'required',
-            'earning' => 'required',
-            'users_id' => 'required|integer',
+            'user_id' => 'required|integer',
             'purchase_id' => 'required|integer',
             'date_id' => 'required|integer',
             'reason_id' => 'required|integer',
@@ -100,8 +96,7 @@ class ExpenseController extends Controller
             $old = clone $reason;
             
             $reason->expense =$data['expense'];
-            $reason->earning =$data['earning'];
-            $reason->users_id =$data['users_id'];
+            $reason->user_id =$data['user_id'];
             $reason->purchase_id =$data['purchase_id'];
             $reason->date_id =$data['date_id'];
             $reason->reason_id =$data['reason_id'];
@@ -130,4 +125,184 @@ class ExpenseController extends Controller
             return response()->json($object);
         }
     } 
+
+    public function Elements2($reasons){
+        $reasonss= Reason::where('name', 'LIKE', "%{$reasons}%")->first();
+        $expenses = ModelExpense::where('reason_id', '=', $reasonss -> id)->get();
+
+        $expensesArray = [];
+        foreach ($expenses as $expense) {
+            $expensesArray[] = [
+                "id" => $expense->id,
+                "expense" => $expense->expense,
+                "purchase_id" => $expense->purchase_id,
+                "date_id" => $expense->date_id,
+                "reason_id" => $expense->reason_id,
+                "created_at" => $expense->created_at,
+                "updated_at" => $expense->updated_at,
+                "user_id" => $expense->user_id,
+            ];
+        }    
+
+        return response()->json($expensesArray);
+    }
+
+    public function Elements($reasons){
+        $reasonss= Reason::where('reason', 'LIKE', "%{$reasons}%")->first();
+        $expenses = ModelExpense::where('reason_id', '=', $reasonss -> id)->get();
+
+        $expensesArray = [];
+        foreach ($expenses as $expense) {
+            $expensesArray[] = [
+                "id" => $expense->id,
+                "expense" => $expense->expense,
+                "purchase_id" => $expense->purchase_id,
+                "date_id" => $expense->date_id,
+                "reason_id" => $expense->reason_id,
+                "created_at" => $expense->created_at,
+                "updated_at" => $expense->updated_at,
+                "user_id" => $expense->user_id,
+            ];
+        }    
+
+        return response()->json($expensesArray);
+    }
+
+    public function ListUser($userId){
+        $expenses = ModelExpense::where('user_id', $userId)->get();
+        $expensesArray = [];
+        foreach ($expenses as $expense) {
+            $expensesArray[] = [
+                "id" => $expense->id,
+                "expense" => $expense->expense,
+                "user" => $expense->user,
+                "purchase" => $expense->purchase,
+                "date" => $expense->date,
+                "reason" => $expense->reason,
+                "created" => $expense->created_at,
+                "updated" => $expense->updated_at
+            ];
+        }    
+    
+        return response()->json($expensesArray);
+    }
+
+    public function ListReasonUser($userId, $reason){
+        $expenses = ModelExpense::where('user_id', $userId)
+        ->whereHas('reason', function ($query) use ($reason) {
+        $query->where('reason', $reason);})->get();
+    
+        $totalExpenses = 0;
+        
+        $resultArray = [];
+    
+        
+        foreach ($expenses as $expense) {
+            $purchaseDetails = [
+                "id" => $expense->id,
+                "purchase" => $expense->purchase,
+                "expense" => $expense->expense,
+            ];
+    
+            $resultArray[] = $purchaseDetails;
+            $totalExpenses += $expense->expense;
+        }
+    
+        $resultArray['total_expenses'] = $totalExpenses;
+    
+        return response()->json($resultArray);
+    }
+
+
+    public function updatedepobres(Request $request)
+    {
+        $data = $request->validate([
+            'id' => 'required|integer|min:1',
+            'expense' => 'required',
+        ]);
+
+        $reason = ModelExpense::where('id', '=', $data['id'])->first();
+        
+        if($reason)
+        {
+            $old = clone $reason;
+            
+            $reason->expense =$data['expense'];
+
+            if($reason->save()){
+                $object =
+                [
+                    "response" => 'success, Item update correctly',
+                    "old" => $old,
+                    "new" => $reason,
+                ];
+                return response()->json($object);
+            } else{
+                $object =
+                [
+                    "response" =>'Error: stupid',
+                ];
+                return response()->json($object);
+            }
+        }else
+        {
+            $object =
+            [
+                "response" =>'Error: stupid',
+            ];
+            return response()->json($object);
+        }
+    } 
+
+    public function RecentExpenses($userId){
+        $expenses = ModelExpense::where('user_id', $userId)
+            ->latest()
+            ->take(5)
+            ->get();
+    
+        $resultArray = [];
+    
+        foreach ($expenses as $expense) {
+            $purchaseDetails = [
+                "id" => $expense->id,
+                "expense" => $expense->expense,
+                "user" => $expense->user, 
+                "purchase" => $expense->purchase,
+                "date" => $expense->date, 
+                "reason" => $expense->reason,
+            ];
+            $resultArray[] = $purchaseDetails; // Agrega los detalles de la compra al array resultante
+        }
+    
+        return response()->json($resultArray); // Devuelve el array completo como JSON
+    }
+
+    public function SearchExpenses($userId, $searchTerm) {
+        $expenses = ModelExpense::where('user_id', $userId)
+            ->whereHas('purchase', function ($query) use ($searchTerm) {
+                $query->where('buy', 'like', $searchTerm . '%'); // Busca por coincidencia con los primeros caracteres
+            })
+            ->latest()
+            ->get();
+    
+        $resultArray = [];
+    
+        foreach ($expenses as $expense) {
+            $purchaseDetails = [
+                "id" => $expense->id,
+                "expense" => $expense->expense,
+                "user" => $expense->user,
+                "purchase" => $expense->purchase,
+                "date" => $expense->date,
+                "reason" => $expense->reason,
+            ];
+            $resultArray[] = $purchaseDetails; // Agrega los detalles de la compra al array resultante
+        }
+    
+        return response()->json($resultArray); // Devuelve el array completo como JSON
+    }
+
+
+    
 }
+

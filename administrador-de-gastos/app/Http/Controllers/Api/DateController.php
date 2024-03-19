@@ -16,7 +16,7 @@ class DateController extends Controller
         {
             $object =[
                 "id" => $date->id,
-                "users_id" => $date->users_id,
+                "user_id" => $date->user_id,
                 "Date" => $date->date,
                 "created" => $date->created_at,
                 "updated" => $date->updated_at
@@ -34,7 +34,7 @@ class DateController extends Controller
             $object =
                 [
                 "id" => $date->id,
-                "users_id" => $date->users_id,
+                "user_id" => $date->user_id,
                 "Date" => $date->date,
                 "created" => $date->created_at,
                 "updated" => $date->updated_at
@@ -48,12 +48,12 @@ class DateController extends Controller
     {
         $data = $request->validate([
             'date' => 'required',
-            'users_id'=> 'required|integer',
+            'user_id'=> 'required|integer',
         ]);
 
         $date=ModelsDate::create([
             'date' => $data['date'],
-            'users_id' => $data['users_id']
+            'user_id' => $data['user_id']
         ]);
         if($date){
             return response()->json([
@@ -71,7 +71,7 @@ class DateController extends Controller
     {
         $data = $request->validate([
             'id' => 'required|integer|min:1',
-            'users_id' => 'required|integer',
+            'user_id' => 'required|integer',
             'date' => 'required',
         ]);
 
@@ -80,7 +80,7 @@ class DateController extends Controller
         if($date)
         {
             $old = clone $date;
-            $date->users_id =$data['users_id'];
+            $date->user_id =$data['user_id'];
             $date->date =$data['date'];
             if($date->save()){
                 $object =

@@ -15,7 +15,7 @@ class ReasonController extends Controller
         {
             $object =[
                 "id" => $reason->id,
-                "users_id" => $reason->users_id,
+                "user_id" => $reason->user_id,
                 "reason" => $reason->reason,
                 "created" => $reason->created_at,
                 "updated" => $reason->updated_at
@@ -31,7 +31,7 @@ class ReasonController extends Controller
         {
             $object =[
                 "id" => $reason->id,
-                "users_id" => $reason->users_id,
+                "user_id" => $reason->user_id,
                 "reason" => $reason->reason,
                 "created" => $reason->created_at,
                 "updated" => $reason->updated_at
@@ -44,12 +44,12 @@ class ReasonController extends Controller
     {
         $data = $request->validate([
             'reason' => 'required',
-            'users_id'=> 'required|integer',
+            'user_id'=> 'required|integer',
         ]);
 
         $reason=modelReason::create([
             'reason' => $data['reason'],
-            'users_id' => $data['users_id']
+            'user_id' => $data['user_id']
         ]);
         if($reason){
             return response()->json([
@@ -66,7 +66,7 @@ class ReasonController extends Controller
     {
         $data = $request->validate([
             'id' => 'required|integer',
-            'users_id'=> 'required|integer',
+            'user_id'=> 'required|integer',
             'reason' => 'required'
         ]);
         $reason = modelReason::where('id', '=', $data['id'])->first();
@@ -75,7 +75,7 @@ class ReasonController extends Controller
         {
             $old = clone $reason;
             $reason->reason =$data['reason'];
-            $reason->users_id =$data['users_id'];
+            $reason->user_id =$data['user_id'];
 
             if($reason->save()){
                 $object =
@@ -101,4 +101,18 @@ class ReasonController extends Controller
             return response()->json($object);
         }
     } 
+
+    public function ListUser($userId){
+        $reasons = modelReason::where('user_id', $userId)->get();
+        $reasonArray = [];
+        foreach ($reasons as $reason) {
+            $reasonArray[] = [
+                "id" => $reason->id,
+                "user_id" => $reason->user_id,
+                "reason" => $reason->reason,
+            ];
+        }    
+    
+        return response()->json($reasonArray);
+    }
 }
