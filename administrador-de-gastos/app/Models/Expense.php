@@ -29,11 +29,11 @@ class Expense extends Model
 
     public function date()
     {
-        return $this->belongsTo(date::class);
+        return $this->belongsTo(Date::class);
     }
 
     public function reason()
     {
-        return $this->belongsTo(reason::class);
+        return $this->belongsTo(Reason::class);
     }
 }
