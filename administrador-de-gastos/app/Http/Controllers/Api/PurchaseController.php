@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\purchase;
+use App\Models\Purchase;
 use Illuminate\Http\Request;
 
 class PurchaseController extends Controller
@@ -47,7 +47,7 @@ class PurchaseController extends Controller
             'user_id'=> 'required|integer',
         ]);
 
-        $purchase=purchase::create([
+        $purchase=Purchase::create([
             'buy' => $data['buy'],
             'user_id' => $data['user_id']
         ]);

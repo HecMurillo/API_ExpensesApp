@@ -3,14 +3,14 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\expense as ModelExpense;
+use App\Models\Expense;
 use App\Models\Reason;
 use Illuminate\Http\Request;
 
 class ExpenseController extends Controller
 {
     public function list(){
-        $expenses = ModelExpense::all();
+        $expenses = Expense::all();
         $list = [];
         foreach($expenses as $expense)
         {
@@ -31,7 +31,7 @@ class ExpenseController extends Controller
 
     public function item($id)
     {
-        $expenses = ModelExpense::where('id', '=', $id) ->first();
+        $expenses = Expense::where('id', '=', $id) ->first();
         {
             {
             $object =[
@@ -58,7 +58,7 @@ class ExpenseController extends Controller
             'date_id'=> 'required|integer',
             'reason_id'=> 'required|integer',
         ]);
-        $expense=ModelExpense::create([
+        $expense=Expense::create([
             'expense' => $data['expense'],
             'user_id'=> $data['user_id'],
             'purchase_id'=> $data['purchase_id'],
@@ -89,7 +89,7 @@ class ExpenseController extends Controller
             'reason_id' => 'required|integer',
         ]);
 
-        $reason = ModelExpense::where('id', '=', $data['id'])->first();
+        $reason = Expense::where('id', '=', $data['id'])->first();
         
         if($reason)
         {
@@ -128,7 +128,7 @@ class ExpenseController extends Controller
 
     public function Elements2($reasons){
         $reasonss= Reason::where('name', 'LIKE', "%{$reasons}%")->first();
-        $expenses = ModelExpense::where('reason_id', '=', $reasonss -> id)->get();
+        $expenses = Expense::where('reason_id', '=', $reasonss -> id)->get();
 
         $expensesArray = [];
         foreach ($expenses as $expense) {
@@ -149,7 +149,7 @@ class ExpenseController extends Controller
 
     public function Elements($reasons){
         $reasonss= Reason::where('reason', 'LIKE', "%{$reasons}%")->first();
-        $expenses = ModelExpense::where('reason_id', '=', $reasonss -> id)->get();
+        $expenses = Expense::where('reason_id', '=', $reasonss -> id)->get();
 
         $expensesArray = [];
         foreach ($expenses as $expense) {
@@ -169,7 +169,7 @@ class ExpenseController extends Controller
     }
 
     public function ListUser($userId){
-        $expenses = ModelExpense::where('user_id', $userId)->get();
+        $expenses = Expense::where('user_id', $userId)->get();
         $expensesArray = [];
         foreach ($expenses as $expense) {
             $expensesArray[] = [
@@ -188,7 +188,7 @@ class ExpenseController extends Controller
     }
 
     public function ListReasonUser($userId, $reason){
-        $expenses = ModelExpense::where('user_id', $userId)
+        $expenses = Expense::where('user_id', $userId)
         ->whereHas('reason', function ($query) use ($reason) {
         $query->where('reason', $reason);})->get();
     
@@ -221,7 +221,7 @@ class ExpenseController extends Controller
             'expense' => 'required',
         ]);
 
-        $reason = ModelExpense::where('id', '=', $data['id'])->first();
+        $reason = Expense::where('id', '=', $data['id'])->first();
         
         if($reason)
         {
@@ -255,7 +255,7 @@ class ExpenseController extends Controller
     } 
 
     public function RecentExpenses($userId){
-        $expenses = ModelExpense::where('user_id', $userId)
+        $expenses = Expense::where('user_id', $userId)
             ->latest()
             ->take(5)
             ->get();
@@ -278,7 +278,7 @@ class ExpenseController extends Controller
     }
 
     public function SearchExpenses($userId, $searchTerm) {
-        $expenses = ModelExpense::where('user_id', $userId)
+        $expenses = Expense::where('user_id', $userId)
             ->whereHas('purchase', function ($query) use ($searchTerm) {
                 $query->where('buy', 'like', $searchTerm . '%'); // Busca por coincidencia con los primeros caracteres
             })
