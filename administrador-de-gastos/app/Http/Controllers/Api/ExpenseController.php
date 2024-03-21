@@ -302,6 +302,19 @@ class ExpenseController extends Controller
         return response()->json($resultArray); // Devuelve el array completo como JSON
     }
 
+    public function TotalGlobal($userId) {
+        // Calcula el total de gastos del usuario
+        $totalExpenses = Expense::where('user_id', $userId)->sum('expense');
+    
+        // Prepara el resultado con el total de gastos
+        $resultArray = [
+            'total' => $totalExpenses
+        ];
+    
+        // Devuelve los datos como JSON
+        return response()->json($resultArray);
+    }
+
 
     
 }

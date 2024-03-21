@@ -45,6 +45,7 @@ Route::get('/Expenses/{id}', [ExpenseController::class, 'item']);
 Route::post('/Expenses/Create', [ExpenseController::class, 'create']);
 Route::post('/Expenses/Update', [ExpenseController::class, 'update']);
 Route::post('/Expenses/Updatepo', [ExpenseController::class, 'updatedepobres']);
+Route::get('/total/{userId}', [ExpenseController::class, 'TotalGlobal']);
 
 Route::get('/Users', [UserController::class, 'list']);
 Route::get('/Users/{id}', [UserController::class, 'item']);
